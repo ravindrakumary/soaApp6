@@ -1,0 +1,141 @@
+<?xml version = "1.0" encoding = "UTF-8" ?>
+<!--
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  Oracle JDeveloper BPEL Designer 
+  
+  Created: Tue Mar 12 17:14:50 IST 2019
+  Author:  ray
+  Type: BPEL 2.0 Process
+  Purpose: Asynchronous BPEL Process
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-->
+<process name="simplesubtractprocess"
+         targetNamespace="http://xmlns.oracle.com/soaApp6/soaProject6/simplesubtractprocess"
+         xmlns="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:client="http://xmlns.oracle.com/soaApp6/soaProject6/simplesubtractprocess"
+         xmlns:ora="http://schemas.oracle.com/xpath/extension"
+         xmlns:ui="http://xmlns.oracle.com/soa/designer"
+         xmlns:bpelx="http://schemas.oracle.com/bpel/extension"
+         xmlns:bpel="http://docs.oasis-open.org/wsbpel/2.0/process/executable"
+         xmlns:oraext="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.ExtFunc"
+         xmlns:bpm="http://xmlns.oracle.com/bpmn20/extensions"
+         xmlns:xp20="http://www.oracle.com/XSL/Transform/java/oracle.tip.pc.services.functions.Xpath20"
+         xmlns:ess="http://xmlns.oracle.com/scheduler" xmlns:hwf="http://xmlns.oracle.com/bpel/workflow/xpath"
+         xmlns:xref="http://www.oracle.com/XSL/Transform/java/oracle.tip.xref.xpath.XRefXPathFunctions"
+         xmlns:dvm="http://www.oracle.com/XSL/Transform/java/oracle.tip.dvm.LookupValue"
+         xmlns:bpws="http://schemas.xmlsoap.org/ws/2003/03/business-process/"
+         xmlns:xdk="http://schemas.oracle.com/bpel/extension/xpath/function/xdk"
+         xmlns:ids="http://xmlns.oracle.com/bpel/services/IdentityService/xpath"
+         xmlns:ldap="http://schemas.oracle.com/xpath/extension/ldap"
+         xmlns:ns1="http://xmlns.oracle.com/bpel/workflow/taskService"
+         xmlns:task="http://xmlns.oracle.com/bpel/workflow/task"
+         xmlns:wfcommon="http://xmlns.oracle.com/bpel/workflow/common"
+         xmlns:wf="http://schemas.oracle.com/bpel/extensions/workflow">
+
+    <import ui:processWSDL="true" namespace="http://xmlns.oracle.com/soaApp6/soaProject6/simplesubtractprocess" location="../WSDLs/simplesubtractprocess.wsdl" importType="http://schemas.xmlsoap.org/wsdl/"/>
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        PARTNERLINKS                                                      
+        List of services participating in this BPEL process               
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    --> 
+    <partnerLinks>
+        <!-- 
+      The 'client' role represents the requester of this service. It is 
+      used for callback. The location and correlation information associated
+      with the client role are automatically set using WS-Addressing.
+    -->
+        <partnerLink name="simplesubtractprocess_client" partnerLinkType="client:simplesubtractprocess" myRole="simplesubtractprocessProvider" partnerRole="simplesubtractprocessRequester"/>
+        <partnerLink name="Humantask1.TaskService_1" partnerLinkType="ns1:TaskService" partnerRole="TaskService"
+                     myRole="TaskServiceCallbackListener"/>
+    </partnerLinks>
+
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        VARIABLES                                                        
+        List of messages and XML documents used within this BPEL process 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <variables>
+        <!-- Reference to the message passed as input during initiation -->
+        <variable name="inputVariable" messageType="client:simplesubtractprocessRequestMessage"/>
+
+        <!-- Reference to the message that will be sent back to the requester during callback -->
+        <variable name="outputVariable" messageType="client:simplesubtractprocessResponseMessage"/>
+        <variable name="Humantask11_globalVariable" messageType="ns1:taskMessage"/>
+    </variables>
+
+    <!-- 
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+       ORCHESTRATION LOGIC                                               
+       Set of activities coordinating the flow of messages across the    
+       services integrated within this business process                  
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    -->
+    <sequence name="main">
+        <!-- Receive input from requestor. (Note: This maps to operation defined in simplesubtractprocess.wsdl) -->
+        <receive name="receiveInput" partnerLink="simplesubtractprocess_client" portType="client:simplesubtractprocess" operation="process" variable="inputVariable" createInstance="yes"/>
+        <assign name="Assign1">
+            <copy>
+                <from>$inputVariable.payload/client:a - $inputVariable.payload/client:b</from>
+                <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$outputVariable.payload/client:result</to>
+            </copy>
+        </assign>
+        <scope name="Humantask11" xmlns:wf="http://schemas.oracle.com/bpel/extensions/workflow"
+               wf:key="Humantask11_globalVariable">
+            <bpelx:annotation>
+                <bpelx:pattern patternName="bpelx:workflow"></bpelx:pattern>
+            </bpelx:annotation>
+            <variables>
+                <variable name="initiateTaskInput" messageType="ns1:initiateTaskMessage"/>
+                <variable name="initiateTaskResponseMessage" messageType="ns1:initiateTaskResponseMessage"/>
+            </variables>
+            <sequence>
+                <assign name="Humantask11_AssignTaskAttributes">
+                    <copy>
+                        <from>number(3)</from>
+                        <to variable="initiateTaskInput" part="payload"><query>task:task/task:priority</query></to>
+                    </copy>
+                    <copy>
+                        <from><literal><payload xmlns="http://xmlns.oracle.com/bpel/workflow/task">
+</payload></literal></from>
+                        <to variable="initiateTaskInput" part="payload"><query>task:task/task:payload</query></to>
+                    </copy>
+                </assign>
+                <invoke name="initiateTask_Humantask11" partnerLink="Humantask1.TaskService_1" operation="initiateTask"
+                        portType="ns1:TaskService" inputVariable="initiateTaskInput"
+                        outputVariable="initiateTaskResponseMessage"/>
+                <receive name="receiveCompletedTask_Humantask11" partnerLink="Humantask1.TaskService_1"
+                         portType="ns1:TaskServiceCallback" operation="onTaskCompleted"
+                         variable="Humantask11_globalVariable" createInstance="no"/>
+            </sequence>
+        </scope>
+        <if name="taskIf">
+            <documentation>
+                <![CDATA[Task outcome is APPROVE]]>
+            </documentation>
+            <condition>$Humantask11_globalVariable.payload/task:systemAttributes/task:outcome = 'APPROVE'</condition>
+            <sequence>
+                <empty/>
+            </sequence>
+            <elseif>
+                <documentation>
+                    <![CDATA[Task outcome is REJECT]]>
+                </documentation>
+                <condition>$Humantask11_globalVariable.payload/task:systemAttributes/task:outcome = 'REJECT'</condition>
+                <sequence>
+                    <empty/>
+                </sequence>
+            </elseif>
+            <else>
+                <sequence>
+                    <empty/>
+                </sequence>
+            </else>
+        </if>
+        <!-- 
+          Asynchronous callback to the requester. (Note: the callback location and correlation id is transparently handled using WS-addressing.)
+        -->
+        <invoke name="callbackClient" partnerLink="simplesubtractprocess_client" portType="client:simplesubtractprocessCallback" operation="processResponse" inputVariable="outputVariable"/>
+    </sequence>
+</process>
