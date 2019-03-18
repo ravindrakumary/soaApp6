@@ -41,9 +41,9 @@
         <composite.name>${project.artifactId}</composite.name>
         <composite.revision>${project.version}</composite.revision>
         <composite.partition>default</composite.partition>
-        <serverUrl>http://localhost:7003</serverUrl>
-        <user>weblogic</user>
-        <password>welcome1</password>
+        <serverUrl>${oracleServerUrl}</serverUrl>
+        <user>${oracleUsername}</user>
+        <password>${oraclePassword}</password>
         <overwrite>true</overwrite>
         <forceDefault>true</forceDefault>
         <regenerateRulebase>false</regenerateRulebase>
@@ -57,7 +57,7 @@
         <!--  input is the name of the composite to run test suties against -->
         <input>soaProject6</input>
         <oracleHome>
-            D:\Oracle\Middleware01Mar\Oracle_Home
+            ${env.ORACLE_HOME}
         </oracleHome>
     <!--added below line to avoid warning message "[WARNING] Using platform encoding (Cp1252 actually)" -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>		
@@ -98,7 +98,7 @@
                              with "/soa" appended to it.
                     -->
                     <!--<oracleHome>JDEV_HOME</oracleHome>-->
-                    <soaOracleHome>D:\Oracle\Middleware01Mar\Oracle_Home\soa</soaOracleHome>
+                    <soaOracleHome>JDEV_HOME/soa</soaOracleHome>
                     <input>${input}</input>
                 </configuration>
                 <!-- extensions=true is needed to use the custom sar packaging type -->
