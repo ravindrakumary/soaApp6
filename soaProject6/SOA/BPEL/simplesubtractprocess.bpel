@@ -46,8 +46,6 @@
       with the client role are automatically set using WS-Addressing.
     -->
         <partnerLink name="simplesubtractprocess_client" partnerLinkType="client:simplesubtractprocess" myRole="simplesubtractprocessProvider" partnerRole="simplesubtractprocessRequester"/>
-        <partnerLink name="Humantask1.TaskService_1" partnerLinkType="ns1:TaskService" partnerRole="TaskService"
-                     myRole="TaskServiceCallbackListener"/>
     </partnerLinks>
 
     <!-- 
@@ -62,7 +60,6 @@
 
         <!-- Reference to the message that will be sent back to the requester during callback -->
         <variable name="outputVariable" messageType="client:simplesubtractprocessResponseMessage"/>
-        <variable name="Humantask11_globalVariable" messageType="ns1:taskMessage"/>
     </variables>
 
     <!-- 
@@ -81,58 +78,6 @@
                 <to expressionLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">$outputVariable.payload/client:result</to>
             </copy>
         </assign>
-        <scope name="Humantask11" xmlns:wf="http://schemas.oracle.com/bpel/extensions/workflow"
-               wf:key="Humantask11_globalVariable">
-            <bpelx:annotation>
-                <bpelx:pattern patternName="bpelx:workflow"></bpelx:pattern>
-            </bpelx:annotation>
-            <variables>
-                <variable name="initiateTaskInput" messageType="ns1:initiateTaskMessage"/>
-                <variable name="initiateTaskResponseMessage" messageType="ns1:initiateTaskResponseMessage"/>
-            </variables>
-            <sequence>
-                <assign name="Humantask11_AssignTaskAttributes">
-                    <copy>
-                        <from>number(3)</from>
-                        <to variable="initiateTaskInput" part="payload"><query>task:task/task:priority</query></to>
-                    </copy>
-                    <copy>
-                        <from><literal><payload xmlns="http://xmlns.oracle.com/bpel/workflow/task">
-</payload></literal></from>
-                        <to variable="initiateTaskInput" part="payload"><query>task:task/task:payload</query></to>
-                    </copy>
-                </assign>
-                <invoke name="initiateTask_Humantask11" partnerLink="Humantask1.TaskService_1" operation="initiateTask"
-                        portType="ns1:TaskService" inputVariable="initiateTaskInput"
-                        outputVariable="initiateTaskResponseMessage"/>
-                <receive name="receiveCompletedTask_Humantask11" partnerLink="Humantask1.TaskService_1"
-                         portType="ns1:TaskServiceCallback" operation="onTaskCompleted"
-                         variable="Humantask11_globalVariable" createInstance="no"/>
-            </sequence>
-        </scope>
-        <if name="taskIf">
-            <documentation>
-                <![CDATA[Task outcome is APPROVE]]>
-            </documentation>
-            <condition>$Humantask11_globalVariable.payload/task:systemAttributes/task:outcome = 'APPROVE'</condition>
-            <sequence>
-                <empty/>
-            </sequence>
-            <elseif>
-                <documentation>
-                    <![CDATA[Task outcome is REJECT]]>
-                </documentation>
-                <condition>$Humantask11_globalVariable.payload/task:systemAttributes/task:outcome = 'REJECT'</condition>
-                <sequence>
-                    <empty/>
-                </sequence>
-            </elseif>
-            <else>
-                <sequence>
-                    <empty/>
-                </sequence>
-            </else>
-        </if>
         <!-- 
           Asynchronous callback to the requester. (Note: the callback location and correlation id is transparently handled using WS-addressing.)
         -->
