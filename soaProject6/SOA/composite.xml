@@ -54,6 +54,6 @@
   </wire>
   <wire>
     <source.uri>simplesubtractprocess/Humantask1.TaskService_1</source.uri>
-    <target.uri>Humantask1/TaskService</target.uri>
+    <target.uri>Humantask1/TaskService_1</target.uri>
   </wire>
 </composite>
