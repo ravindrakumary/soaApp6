@@ -16,37 +16,37 @@
         </dgm:operations>
     </dgm:gService>
     <dgm:gComponent name="simplesubtractprocess">
-        <dgm:body borderWidth="2" arcRad="20" X="247" Y="26" width="130" height="61">
+        <dgm:body borderWidth="2" arcRad="20" X="287" Y="26" width="130" height="61">
             <dgm:borderColor r="69" g="113" b="140"/>
             <dgm:lightBgColor r="166" g="208" b="230"/>
             <dgm:darkBgColor r="99" g="162" b="201"/>
         </dgm:body>
-        <dgm:shadow arcRad="20" X="237" Y="19" width="150" height="77">
+        <dgm:shadow arcRad="20" X="277" Y="19" width="150" height="77">
             <dgm:bgColor r="196" g="228" b="240"/>
         </dgm:shadow>
         <dgm:inputPort name="simplesubtractprocess_client" X="-10" Y="15" diameter="20" imageURI="oracle/tip/tools/ide/fabric/resource/image/visuals_rd1/servicereference.png" interface="http://xmlns.oracle.com/soaApp6/soaProject6/simplesubtractprocess#wsdl.interface(simplesubtractprocess)" callbackInterface="http://xmlns.oracle.com/soaApp6/soaProject6/simplesubtractprocess#wsdl.interface(simplesubtractprocessCallback)"/>
-        <dgm:outputPort name="Humantask1.TaskService_1" X="120" Y="15" diameter="20" imageURI="oracle/tip/tools/ide/fabric/resource/image/visuals_rd1/servicereference.png" interface="http://xmlns.oracle.com/bpel/workflow/taskService#wsdl.interface(TaskService)" callbackInterface="http://xmlns.oracle.com/bpel/workflow/taskService#wsdl.interface(TaskServiceCallback)"/>
+        <dgm:outputPort name="Humantask1.TaskService" X="120" Y="15" diameter="20" imageURI="oracle/tip/tools/ide/fabric/resource/image/visuals_rd1/servicereference.png" interface="http://xmlns.oracle.com/bpel/workflow/taskService#wsdl.interface(TaskService)" callbackInterface="http://xmlns.oracle.com/bpel/workflow/taskService#wsdl.interface(TaskServiceCallback)"/>
         <dgm:nodeIcon URI="/oracle/tip/tools/ide/bpel/shared/plugins/resources/images/soa/process_20x20.png" X="10" Y="4" width="20" height="20"/>
     </dgm:gComponent>
     <dgm:gComponent name="Humantask1">
-        <dgm:body borderWidth="2" arcRad="20" X="466" Y="26" width="130" height="61">
+        <dgm:body borderWidth="2" arcRad="20" X="546" Y="26" width="130" height="61">
             <dgm:borderColor r="109" g="136" b="65"/>
             <dgm:lightBgColor r="201" g="224" b="155"/>
             <dgm:darkBgColor r="157" g="195" b="93"/>
         </dgm:body>
-        <dgm:shadow arcRad="20" X="456" Y="19" width="150" height="77">
+        <dgm:shadow arcRad="20" X="536" Y="19" width="150" height="77">
             <dgm:bgColor r="196" g="228" b="240"/>
         </dgm:shadow>
         <dgm:inputPort name="TaskService" X="-10" Y="15" diameter="20" imageURI="oracle/tip/tools/ide/fabric/resource/image/visuals_rd1/servicereference.png" interface="http://xmlns.oracle.com/bpel/workflow/taskService#wsdl.interface(TaskService)" callbackInterface="http://xmlns.oracle.com/bpel/workflow/taskService#wsdl.interface(TaskServiceCallback)"/>
         <dgm:nodeIcon URI="/oracle/tip/tools/ide/workflow/resources/images/humantask_20x20.png" X="10" Y="4" width="20" height="20"/>
     </dgm:gComponent>
     <dgm:gWireLink source="simplesubtractprocess_client_ep" target="simplesubtractprocess/simplesubtractprocess_client" width="2">
-        <dgm:gSegment X1="168" Y1="51" X2="237" Y2="51"/>
+        <dgm:gSegment X1="168" Y1="51" X2="277" Y2="51"/>
         <dgm:baseColor r="153" g="153" b="153"/>
         <dgm:selectedColor r="49" g="106" b="196"/>
     </dgm:gWireLink>
-    <dgm:gWireLink source="simplesubtractprocess/Humantask1.TaskService_1" target="Humantask1/TaskService" width="2">
-        <dgm:gSegment X1="387" Y1="51" X2="456" Y2="51"/>
+    <dgm:gWireLink source="simplesubtractprocess/Humantask1.TaskService" target="Humantask1/TaskService" width="2">
+        <dgm:gSegment X1="427" Y1="51" X2="536" Y2="51"/>
         <dgm:baseColor r="153" g="153" b="153"/>
         <dgm:selectedColor r="49" g="106" b="196"/>
     </dgm:gWireLink>
